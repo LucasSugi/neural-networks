@@ -1,0 +1,6 @@
+train.txt
+6
+8
+test.txt
+6
+4
