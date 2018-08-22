@@ -51,7 +51,7 @@ def readData():
 
 #Activation function for create 2 regions
 def activationFunction(net):
-	if(net >= 0.5): return 1
+	if(net >= 0): return 1
 	else: return -1
 
 
