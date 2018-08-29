@@ -39,16 +39,13 @@ def normalizing(data):
     #Size data
     row,col = data.shape
 
-    for i in range(col):
+    for i in range(1,col):
         data[:,i] = (data[:,i] - min(data[:,i]))/(max(data[:,i])-min(data[:,i]))
     return data
 
 #Multilayer-Perceptron Forward
 def mlp_forward(tuple_data,hidden_weights,output_weights):
     
-    #Set the theta
-    tuple_data[0] = 1
-
     #Computes the net and f(net) - Hidden
     net_h = np.sum(np.multiply(tuple_data,hidden_weights),axis=1)
     f_h = activaction_function(net_h)
@@ -61,6 +58,49 @@ def mlp_forward(tuple_data,hidden_weights,output_weights):
     f_o = activaction_function(net_o)
         
     return net_h,f_h,net_o,f_o
+
+
+#Multilayer-Perceptron Backward
+def mlp_backward(data,hidden_weights,output_weights):
+
+    #Extract class
+    temp_classes = np.unique(data[:,0])
+    
+    #Create classes for each neuron
+    classes = np.zeros([data.shape[0],len(temp_classes)])
+    
+    #Populate class
+    temp_data = data[:,0]
+    for i in range(len(temp_classes)):
+        for j in range(len(temp_data)):
+            if(temp_classes[i] == temp_data[j]):
+                classes[j,i] = 1
+    
+    #Extract the attributes and set theta
+    attributes = np.copy(data)
+    attributes[:,0] = 1
+    
+    #Conditions of stop
+    threshold = 1e-2
+    sqerror = 2 * threshold
+    while(sqerror > threshold):
+        sqerror = 0
+
+        #For each row verify apply the forward and backpropagation
+        for i in range(attributes.shape[0]):
+            net_h,f_h,net_o,f_o = mlp_forward(attributes[i,:],hidden_weights,output_weights)
+
+            #Calculates the error
+            error = classes[i,:] - f_o
+
+            #Squared error
+            sqerror =  sqerror + np.sum((error*error))
+
+            #Backpropagation
+
+        sqerror = sqerror / attributes.shape[0]
+        print(sqerror)
+        sqerror = -1
 
 #Read the data that will be used in ml
 def readData():
@@ -87,7 +127,5 @@ hidden_weights, output_weights = mlp_architecture(data,hidden_length,output_leng
 #Normalizing data
 data = normalizing(data)
 
-#MLP - Forward
-net_h,f_h,net_o,f_o = mlp_forward(np.copy(data[0,:]),hidden_weights,output_weights);
-
 #MLP - Backward
+mlp_backward(data,hidden_weights,output_weights)
