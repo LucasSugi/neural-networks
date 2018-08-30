@@ -11,6 +11,10 @@ import random as rd
 def activaction_function(net):
     return 1/(1+(np.exp(-net)))
 
+#Derivative function - Sigmoid
+def derivative_function(f_net):
+    return f_net * (1-f_net)
+
 #Multilayer-Perceptron Architecture
 def mlp_architecture(data,hidden_length,output_length):
 
@@ -61,46 +65,57 @@ def mlp_forward(tuple_data,hidden_weights,output_weights):
 
 
 #Multilayer-Perceptron Backward
-def mlp_backward(data,hidden_weights,output_weights):
+def mlp_backward(data,hidden_weights,output_weights,eta):
 
     #Extract class
-    temp_classes = np.unique(data[:,0])
+    temp_classes = np.unique(data[:,data.shape[1]-1])
     
     #Create classes for each neuron
     classes = np.zeros([data.shape[0],len(temp_classes)])
     
     #Populate class
-    temp_data = data[:,0]
+    temp_data = data[:,data.shape[1]-1]
     for i in range(len(temp_classes)):
         for j in range(len(temp_data)):
             if(temp_classes[i] == temp_data[j]):
                 classes[j,i] = 1
+   
+    #Extract the attributes
+    attributes = np.copy(data[:,0:data.shape[1]-1])
     
-    #Extract the attributes and set theta
-    attributes = np.copy(data)
-    attributes[:,0] = 1
-    
+    #Append the theta
+    theta = np.ones([data.shape[0],1])
+    attributes = np.append(attributes,theta,axis=1)
+
     #Conditions of stop
     threshold = 1e-2
     sqerror = 2 * threshold
     while(sqerror > threshold):
         sqerror = 0
 
-        #For each row verify apply the forward and backpropagation
+        #For each row apply the forward and backpropagation
         for i in range(attributes.shape[0]):
             net_h,f_h,net_o,f_o = mlp_forward(attributes[i,:],hidden_weights,output_weights)
 
             #Calculates the error
             error = classes[i,:] - f_o
-
+            
             #Squared error
             sqerror =  sqerror + np.sum((error*error))
 
             #Backpropagation
+            delta_o = np.multiply(error,derivative_function(f_o))
+            w_o = output_weights[:,0:output_weights.shape[1]-1]
+            delta_h = np.multiply(f_h,np.dot(delta_o.reshape(1,f_o.shape[0]),w_o))
+
+            #Learning
+            output_weights =  output_weights + (eta * np.dot(delta_o.reshape(f_o.shape[0],1),np.append(f_h,1).reshape(1,f_h.shape[0]+1)))
+            hidden_weights = hidden_weights + (eta * np.dot(delta_h.reshape(f_h.shape[0],1),attributes[i,:].reshape(1,data.shape[1])))
 
         sqerror = sqerror / attributes.shape[0]
         print(sqerror)
-        sqerror = -1
+
+    return hidden_weights,output_weights
 
 #Read the data that will be used in ml
 def readData():
@@ -116,7 +131,6 @@ def readData():
 
     #Load data
     return np.genfromtxt(pathData, delimiter=","),hidden_length,output_length
-    
 
 #Call for read data
 data,hidden_length,output_length = readData();
@@ -128,4 +142,4 @@ hidden_weights, output_weights = mlp_architecture(data,hidden_length,output_leng
 data = normalizing(data)
 
 #MLP - Backward
-mlp_backward(data,hidden_weights,output_weights)
+hidden_weights,output_weights = mlp_backward(data,hidden_weights,output_weights,0.1)
