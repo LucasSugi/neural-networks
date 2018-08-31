@@ -1,7 +1,7 @@
 '''
 Author: Lucas Yudi Sugi - 9293251
 Discipline: SCC0270 - Introducao a Redes Neurais 
-Title: Recognize A and A inverted with Adaline
+Title: Mlp for classification
 '''
 
 import numpy as np
@@ -35,7 +35,6 @@ def mlp_architecture(data,hidden_length,output_length):
             output_weights[i][j] = rd.uniform(-0.5,0.5)
 
     return hidden_weights,output_weights
-
 
 #Normalizing
 def normalizing(data):
@@ -88,7 +87,7 @@ def mlp_backward(data,hidden_weights,output_weights,eta):
     attributes = np.append(attributes,theta,axis=1)
 
     #Conditions of stop
-    threshold = 1e-2
+    threshold = 0.15
     sqerror = 2 * threshold
     while(sqerror > threshold):
         sqerror = 0
@@ -96,7 +95,7 @@ def mlp_backward(data,hidden_weights,output_weights,eta):
         #For each row apply the forward and backpropagation
         for i in range(attributes.shape[0]):
             net_h,f_h,net_o,f_o = mlp_forward(attributes[i,:],hidden_weights,output_weights)
-
+    
             #Calculates the error
             error = classes[i,:] - f_o
             
@@ -107,7 +106,7 @@ def mlp_backward(data,hidden_weights,output_weights,eta):
             delta_o = np.multiply(error,derivative_function(f_o))
             w_o = output_weights[:,0:output_weights.shape[1]-1]
             delta_h = np.multiply(f_h,np.dot(delta_o.reshape(1,f_o.shape[0]),w_o))
-
+    
             #Learning
             output_weights =  output_weights + (eta * np.dot(delta_o.reshape(f_o.shape[0],1),np.append(f_h,1).reshape(1,f_h.shape[0]+1)))
             hidden_weights = hidden_weights + (eta * np.dot(delta_h.reshape(f_h.shape[0],1),attributes[i,:].reshape(1,data.shape[1])))
@@ -116,6 +115,17 @@ def mlp_backward(data,hidden_weights,output_weights,eta):
         print(sqerror)
 
     return hidden_weights,output_weights
+
+#Apply the mlp
+def mlp(data,hidden_weights,output_weights):
+
+    #training
+    hidden_weights,output_weights = mlp_backward(data,hidden_weights,output_weights,0.09)
+
+    #test
+    for i in range(data.shape[0]):
+        net_h,f_h,net_o,f_o = mlp_forward(data[i,:],hidden_weights,output_weights)
+        print(np.round(f_o))
 
 #Read the data that will be used in ml
 def readData():
@@ -139,7 +149,7 @@ data,hidden_length,output_length = readData();
 hidden_weights, output_weights = mlp_architecture(data,hidden_length,output_length);
 
 #Normalizing data
-data = normalizing(data)
+#data = normalizing(data)
 
-#MLP - Backward
-hidden_weights,output_weights = mlp_backward(data,hidden_weights,output_weights,0.1)
+#Mlp
+mlp(data,hidden_weights,output_weights)
