@@ -67,13 +67,14 @@ def mlp_backward(data,hidden_weights,output_weights,eta):
     attributes = np.append(attributes,theta,axis=1)
    
     #Conditions of stop
-    threshold = 0.15
+    threshold = 0.01
     sqerror = 2 * threshold
     while(sqerror > threshold):
         sqerror = 0
 
         #For each row apply the forward and backpropagation
-        for i in range(attributes.shape[0]):
+        row = attributes.shape[0]
+        for i in range(row):
             net_h,f_h,net_o,f_o = mlp_forward(attributes[i,:],hidden_weights,output_weights)
     
             #Calculates the error
@@ -85,13 +86,13 @@ def mlp_backward(data,hidden_weights,output_weights,eta):
             #Backpropagation
             delta_o = np.multiply(error,derivative_function(f_o))
             w_o = output_weights[:,0:output_weights.shape[1]-1]
-            delta_h = np.multiply(f_h,np.dot(delta_o.reshape(1,f_o.shape[0]),w_o))
+            delta_h = np.multiply(derivative_function(f_h),np.dot(delta_o.reshape(1,f_o.shape[0]),w_o))
     
             #Learning
             output_weights =  output_weights + (eta * np.dot(delta_o.reshape(f_o.shape[0],1),np.append(f_h,1).reshape(1,f_h.shape[0]+1)))
             hidden_weights = hidden_weights + (eta * np.dot(delta_h.reshape(f_h.shape[0],1),attributes[i,:].reshape(1,data.shape[1])))
 
-        sqerror = sqerror / attributes.shape[0]
+        sqerror = sqerror / row 
         print(sqerror)
 
     return hidden_weights,output_weights
