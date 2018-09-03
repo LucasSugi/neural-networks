@@ -105,7 +105,8 @@ def mlp(input_data,output_data,hidden_weights,output_weights):
     
     #Test
     net_h,f_h,net_o,f_o = mlp_forward(input_data,hidden_weights,output_weights)
-    print(np.round(output_data-f_o))
+    print(sum(output_data-np.round(f_o)))
+
 
 #Read the size of input/output matrix
 size_input = int(input())
