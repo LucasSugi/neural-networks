@@ -1,5 +1,5 @@
-wine.data
-2
-2
-1
-2
+wine_pre.data
+13
+5
+5
+3
