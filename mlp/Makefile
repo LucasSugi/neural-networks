@@ -1,2 +1,2 @@
 all:
-	python mlp.py < input.txt
+	python mlp_2_layer.py < input.txt

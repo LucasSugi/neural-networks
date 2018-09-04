@@ -26,7 +26,7 @@ tmp_class = pd.DataFrame(tmp_class)
 wine = pd.concat([wine,tmp_class],axis=1)
 
 #Write file
-wine.to_csv('wine_pre.data',sep=',',header=None)
+wine.to_csv('wine_pre.data',sep=',',header=None,index=False)
 
 #Read data
 df = pd.read_table('default_features_1059_tracks.txt',sep=',',header=None)
@@ -52,4 +52,4 @@ tmp_class = pd.DataFrame(tmp_class)
 tracks = pd.concat([tracks,tmp_class],axis=1)
 
 #Write file
-tracks.to_csv('default_features_1059_tracks_pre.txt',sep=',',header=None)
+tracks.to_csv('default_features_1059_tracks_pre.txt',sep=',',header=None,index=False)
