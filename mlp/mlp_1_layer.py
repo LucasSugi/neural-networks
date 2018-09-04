@@ -57,7 +57,7 @@ def backward(data,input_length,hidden_weights,output_weights,eta,momentum):
     
     #Extract the attributes
     attributes = np.copy(data[:,0:input_length])
-
+    
     #Append the theta
     theta = np.ones([data.shape[0],1])
     attributes = np.append(attributes,theta,axis=1)
@@ -101,16 +101,26 @@ def backward(data,input_length,hidden_weights,output_weights,eta,momentum):
     return hidden_weights,output_weights
 
 #Test of mlp
-def test(data,input_length,hidden_weights,output_weights):
+def test(data,input_length,hidden_weights,output_weights,train_size):
+    
+    #Divide data in train and test
+    train_data = int(train_size * data.shape[0])
+    train_data = np.random.choice(np.arange(0,data.shape[0]),size=train_data,replace=False)
+    test_data = np.setdiff1d(np.arange(0,data.shape[0]),train_data)
+    train_data = data[train_data,:]
+    test_data = data[test_data,:]
+    
+    #MLP - Backward
+    hidden_weights,output_weights = backward(train_data,input_length,hidden_weights,output_weights,0.2,0.7)
     
     #Extract class
-    classes = np.copy(data[:,input_length:data.shape[1]])
+    classes = np.copy(test_data[:,input_length:test_data.shape[1]])
     
     #Extract the attributes
-    attributes = np.copy(data[:,0:input_length])
+    attributes = np.copy(test_data[:,0:input_length])
     
     #Append the theta
-    theta = np.ones([data.shape[0],1])
+    theta = np.ones([test_data.shape[0],1])
     attributes = np.append(attributes,theta,axis=1)
 
     correct = 0
@@ -145,7 +155,5 @@ data,input_length,hidden_length,output_length = readData()
 #MLP - Architecture
 hidden_weights,output_weights = architecture(input_length,hidden_length,output_length) 
 
-#MLP - Backward
-hidden_weights,output_weights = backward(data,input_length,hidden_weights,output_weights,0.2,0.7)
-
-test(data,input_length,hidden_weights,output_weights)
+#MLP - Test
+test(data,input_length,hidden_weights,output_weights,0.7)
