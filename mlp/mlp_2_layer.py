@@ -64,12 +64,15 @@ def forward(tuple_data,hidden_weights_1,hidden_weights_2,output_weights):
 
 #Multilayer-Perceptron Backward
 def backward(data,input_length,hidden_weights_1,hidden_weights_2,output_weights,eta):
-
+    
     #Extract class
     classes = np.copy(data[:,input_length:data.shape[1]])
     
     #Extract the attributes
     attributes = np.copy(data[:,0:input_length])
+    
+    #Normalize data
+    attributes = (attributes-attributes.min())/(attributes.max()-attributes.min())
 
     #Append the theta
     theta = np.ones([data.shape[0],1])
@@ -87,7 +90,7 @@ def backward(data,input_length,hidden_weights_1,hidden_weights_2,output_weights,
             net_h_1,f_h_1,net_h_2,f_h_2,net_o,f_o = forward(attributes[i,:],hidden_weights_1,hidden_weights_2,output_weights)
     
             #Calculates the error
-            error = classes[i] - f_o
+            error = classes[i,:] - f_o
             
             #Squared error
             sqerror =  sqerror + np.sum(np.power(error,2))
@@ -139,4 +142,4 @@ data,input_length,hidden_length_1,hidden_length_2,output_length = readData()
 hidden_weights_1,hidden_weights_2,output_weights = architecture(input_length,hidden_length_1,hidden_length_2,output_length) 
 
 #MLP - Backward
-hidden_weights_1,hidden_weights_2,output_weights = backward(data,input_length,hidden_weights_1,hidden_weights_2,output_weights,0.1)
+hidden_weights_1,hidden_weights_2,output_weights = backward(data,input_length,hidden_weights_1,hidden_weights_2,output_weights,0.2)
