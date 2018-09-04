@@ -78,6 +78,7 @@ def backward(data,input_length,hidden_weights_1,hidden_weights_2,output_weights,
     #Conditions of stop
     threshold = 0.01
     sqerror = 2 * threshold
+    momentum_o = momentum_h_1 = momentum_h_2 = 0
     while(sqerror > threshold):
         sqerror = 0
 
@@ -103,8 +104,11 @@ def backward(data,input_length,hidden_weights_1,hidden_weights_2,output_weights,
     
             #Learning
             output_weights += (eta * np.dot(delta_o.reshape(f_o.shape[0],1),np.append(f_h_2,1).reshape(1,f_h_2.shape[0]+1)))
+            output_weights += (momentum * momentum_o)
             hidden_weights_2 += (eta * np.dot(delta_h_2.reshape(f_h_2.shape[0],1),np.append(f_h_1,1).reshape(1,f_h_1.shape[0]+1)))
+            hidden_weights_2 += (momentum * momentum_h_2)
             hidden_weights_1 += (eta * np.dot(delta_h_1.reshape(f_h_1.shape[0],1),attributes[i,:].reshape(1,input_length+1)))
+            hidden_weights_1 += (momentum * momentum_h_1)
 
         sqerror = sqerror / row 
         print(sqerror)
