@@ -50,7 +50,7 @@ def forward(tuple_data,hidden_weights,output_weights):
 
 
 #Multilayer-Perceptron Backward
-def backward(data,input_length,hidden_weights,output_weights,eta):
+def backward(data,input_length,hidden_weights,output_weights,eta,momentum):
     
     #Extract class
     classes = np.copy(data[:,input_length:data.shape[1]])
@@ -58,9 +58,6 @@ def backward(data,input_length,hidden_weights,output_weights,eta):
     #Extract the attributes
     attributes = np.copy(data[:,0:input_length])
 
-    #Normalizing data
-    attributes = (attributes-attributes.min())/(attributes.max()-attributes.min())
-    
     #Append the theta
     theta = np.ones([data.shape[0],1])
     attributes = np.append(attributes,theta,axis=1)
@@ -68,6 +65,7 @@ def backward(data,input_length,hidden_weights,output_weights,eta):
     #Conditions of stop
     threshold = 0.01
     sqerror = 2 * threshold
+    momentum_o = momentum_h = 0
     while(sqerror > threshold):
         sqerror = 0
 
@@ -88,8 +86,14 @@ def backward(data,input_length,hidden_weights,output_weights,eta):
             delta_h = np.multiply(derivative_function(f_h),np.dot(delta_o.reshape(1,f_o.shape[0]),w_o))
     
             #Learning
-            output_weights =  output_weights + (eta * np.dot(delta_o.reshape(f_o.shape[0],1),np.append(f_h,1).reshape(1,f_h.shape[0]+1)))
-            hidden_weights = hidden_weights + (eta * np.dot(delta_h.reshape(f_h.shape[0],1),attributes[i,:].reshape(1,input_length+1)))
+            output_weights += (eta * np.dot(delta_o.reshape(f_o.shape[0],1),np.append(f_h,1).reshape(1,f_h.shape[0]+1)))
+            output_weights += (momentum * momentum_o)
+            hidden_weights += (eta * np.dot(delta_h.reshape(f_h.shape[0],1),attributes[i,:].reshape(1,input_length+1)))
+            hidden_weights += (momentum * momentum_h)
+            
+            #Computes momentum
+            momentum_o = (eta * np.dot(delta_o.reshape(f_o.shape[0],1),np.append(f_h,1).reshape(1,f_h.shape[0]+1)))
+            momentum_h = (eta * np.dot(delta_h.reshape(f_h.shape[0],1),attributes[i,:].reshape(1,input_length+1)))
 
         sqerror = sqerror / row 
         print(sqerror)
@@ -105,9 +109,6 @@ def test(data,input_length,hidden_weights,output_weights):
     #Extract the attributes
     attributes = np.copy(data[:,0:input_length])
     
-    #Normalizing data
-    attributes = (attributes-attributes.min())/(attributes.max()-attributes.min())
-
     #Append the theta
     theta = np.ones([data.shape[0],1])
     attributes = np.append(attributes,theta,axis=1)
@@ -118,7 +119,7 @@ def test(data,input_length,hidden_weights,output_weights):
         if(sum(abs(classes[i]-np.round(f_o)))==0):
             correct = correct + 1
 
-    print(correct/attributes.shape[0])
+    print("Accuracy: ",correct/attributes.shape[0])
 
 #Read the data that will be used in ml
 def readData():
@@ -145,6 +146,6 @@ data,input_length,hidden_length,output_length = readData()
 hidden_weights,output_weights = architecture(input_length,hidden_length,output_length) 
 
 #MLP - Backward
-hidden_weights,output_weights = backward(data,input_length,hidden_weights,output_weights,0.1)
+hidden_weights,output_weights = backward(data,input_length,hidden_weights,output_weights,0.2,0.7)
 
 test(data,input_length,hidden_weights,output_weights)

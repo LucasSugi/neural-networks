@@ -8,6 +8,9 @@ df = pd.read_table('wine.data',sep=',',header=None)
 #Extract just the attributes
 wine = df.iloc[:,1:len(df.columns)]
 
+#Normalizing data
+wine = (wine-wine.min())/(wine.max()-wine.min())
+
 #Extract class
 classes = df[0].unique()
 
@@ -33,6 +36,9 @@ df = pd.read_table('default_features_1059_tracks.txt',sep=',',header=None)
 
 #Extract just the attributes
 tracks = df.iloc[:,0:len(df.columns)-2]
+
+#Normalizing data
+tracks = (tracks-tracks.min())/(tracks.max()-tracks.min())
 
 #Extract class
 classes = df[69].unique()
