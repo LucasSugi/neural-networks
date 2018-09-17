@@ -1,9 +1,8 @@
 '''
 Author: Lucas Yudi Sugi - 9293251
 Discipline: SCC0270 - Introducao a Redes Neurais 
-Title: Mlp for classification
+Title: Mlp for classification and regression
 '''
-
 import numpy as np
 import random as rd
 
@@ -50,7 +49,7 @@ def forward(tuple_data,hidden_weights,output_weights):
 
 
 #Multilayer-Perceptron Backward
-def backward(data,input_length,hidden_weights,output_weights,eta,momentum):
+def backward(data,input_length,hidden_weights,output_weights,iteration,eta,momentum):
     
     #Extract class
     classes = np.copy(data[:,input_length:data.shape[1]])
@@ -63,23 +62,16 @@ def backward(data,input_length,hidden_weights,output_weights,eta,momentum):
     attributes = np.append(attributes,theta,axis=1)
     
     #Conditions of stop
-    threshold = 0.01
-    sqerror = 2 * threshold
     momentum_o = momentum_h = 0
-    while(sqerror > threshold):
-        sqerror = 0
-
+    for i in range(iteration):
         #For each row apply the forward and backpropagation
         row = attributes.shape[0]
-        for i in range(row):
-            net_h,f_h,net_o,f_o = forward(attributes[i,:],hidden_weights,output_weights)
+        for j in range(row):
+            net_h,f_h,net_o,f_o = forward(attributes[j,:],hidden_weights,output_weights)
     
             #Calculates the error
-            error = classes[i,:] - f_o
+            error = classes[j,:] - f_o
             
-            #Squared error
-            sqerror =  sqerror + np.sum(np.power(error,2))
-    
             #Backpropagation
             delta_o = np.multiply(error,derivative_function(f_o))
             w_o = output_weights[:,0:output_weights.shape[1]-1]
@@ -88,20 +80,17 @@ def backward(data,input_length,hidden_weights,output_weights,eta,momentum):
             #Learning
             output_weights += (eta * np.dot(delta_o.reshape(f_o.shape[0],1),np.append(f_h,1).reshape(1,f_h.shape[0]+1)))
             output_weights += (momentum * momentum_o)
-            hidden_weights += (eta * np.dot(delta_h.reshape(f_h.shape[0],1),attributes[i,:].reshape(1,input_length+1)))
+            hidden_weights += (eta * np.dot(delta_h.reshape(f_h.shape[0],1),attributes[j,:].reshape(1,input_length+1)))
             hidden_weights += (momentum * momentum_h)
             
             #Computes momentum
             momentum_o = (eta * np.dot(delta_o.reshape(f_o.shape[0],1),np.append(f_h,1).reshape(1,f_h.shape[0]+1)))
-            momentum_h = (eta * np.dot(delta_h.reshape(f_h.shape[0],1),attributes[i,:].reshape(1,input_length+1)))
-
-        sqerror = sqerror / row 
-        print(sqerror)
+            momentum_h = (eta * np.dot(delta_h.reshape(f_h.shape[0],1),attributes[j,:].reshape(1,input_length+1)))
 
     return hidden_weights,output_weights
 
 #Test of mlp
-def test(data,input_length,hidden_weights,output_weights,train_size):
+def test(data,input_length,hidden_weights,output_weights,iteration,eta,momentum,train_size,type_learning):
     
     #Divide data in train and test
     train_data = int(train_size * data.shape[0])
@@ -111,7 +100,7 @@ def test(data,input_length,hidden_weights,output_weights,train_size):
     test_data = data[test_data,:]
     
     #MLP - Backward
-    hidden_weights,output_weights = backward(train_data,input_length,hidden_weights,output_weights,0.2,0.7)
+    hidden_weights,output_weights = backward(train_data,input_length,hidden_weights,output_weights,iteration,eta,momentum)
     
     #Extract class
     classes = np.copy(test_data[:,input_length:test_data.shape[1]])
@@ -122,14 +111,20 @@ def test(data,input_length,hidden_weights,output_weights,train_size):
     #Append the theta
     theta = np.ones([test_data.shape[0],1])
     attributes = np.append(attributes,theta,axis=1)
-
-    correct = 0
-    for i in range(attributes.shape[0]):
-        net_h,f_h,net_o,f_o = forward(attributes[i,:],hidden_weights,output_weights)
-        if(sum(abs(classes[i]-np.round(f_o)))==0):
-            correct = correct + 1
-
-    print("Accuracy: ",correct/attributes.shape[0])
+    
+    if(type_learning == 'C'):
+        correct = 0
+        for i in range(attributes.shape[0]):
+            net_h,f_h,net_o,f_o = forward(attributes[i,:],hidden_weights,output_weights)
+            if(sum(abs(classes[i,:]-np.round(f_o)))==0):
+                correct += 1
+        print("Accuracy: ",correct/attributes.shape[0])
+    elif(type_learning == 'R'):
+        error = 0
+        for i in range(attributes.shape[0]):
+            net_h,f_h,net_o,f_o = forward(attributes[i,:],hidden_weights,output_weights)
+            error += np.sum(np.power(classes[i,:]-f_o,2))
+        print("Squared mean error:",error/attributes.shape[0])
 
 #Read the data that will be used in ml
 def readData():
@@ -139,21 +134,36 @@ def readData():
     
     #Number of neurons input layer
     input_length = int(input())
-
+    
     #Number of neurons hidden layer
     hidden_length = int(input())
     
     #Number of neurons output layer
     output_length = int(input())
 
+    #Number of iterations
+    iteration = int(input())
+
+    #Learning rate
+    eta = float(input())
+
+    #Momentum
+    momentum = float(input())
+
+    #Train size
+    train_size = float(input())
+
+    #Type of learning
+    type_learning = str(input()).rstrip()
+
     #Load data
-    return np.genfromtxt(pathData, delimiter=","),input_length,hidden_length,output_length
+    return np.genfromtxt(pathData, delimiter=","),input_length,hidden_length,output_length,iteration,eta,momentum,train_size,type_learning
 
 #Call for read data
-data,input_length,hidden_length,output_length = readData()
+data,input_length,hidden_length,output_length,iteration,eta,momentum,train_size,type_learning = readData()
 
 #MLP - Architecture
 hidden_weights,output_weights = architecture(input_length,hidden_length,output_length) 
 
 #MLP - Test
-test(data,input_length,hidden_weights,output_weights,0.7)
+test(data,input_length,hidden_weights,output_weights,iteration,eta,momentum,train_size,type_learning)
