@@ -1,7 +1,7 @@
 '''
 Author: Lucas Yudi Sugi - 9293251
 Discipline: SCC0270 - Introducao a Redes Neurais 
-Title: Mlp for classification and regression
+Title: Mlp for classification
 '''
 import numpy as np
 import random as rd
