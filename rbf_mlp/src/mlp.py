@@ -78,14 +78,18 @@ def backward(data,input_length,hidden_weights,output_weights,iteration,eta,momen
             delta_h = np.multiply(derivative_function(f_h),np.dot(delta_o.reshape(1,f_o.shape[0]),w_o))
     
             #Learning
-            output_weights += (eta * np.dot(delta_o.reshape(f_o.shape[0],1),np.append(f_h,1).reshape(1,f_h.shape[0]+1)))
+            tmp_o = (eta * np.dot(delta_o.reshape(f_o.shape[0],1),np.append(f_h,1).reshape(1,f_h.shape[0]+1)))
+            tmp_h = (eta * np.dot(delta_h.reshape(f_h.shape[0],1),attributes[j,:].reshape(1,input_length+1)))
+            
+            #Update weights
+            output_weights += tmp_o 
             output_weights += (momentum * momentum_o)
-            hidden_weights += (eta * np.dot(delta_h.reshape(f_h.shape[0],1),attributes[j,:].reshape(1,input_length+1)))
+            hidden_weights += tmp_h 
             hidden_weights += (momentum * momentum_h)
             
             #Computes momentum
-            momentum_o = (eta * np.dot(delta_o.reshape(f_o.shape[0],1),np.append(f_h,1).reshape(1,f_h.shape[0]+1)))
-            momentum_h = (eta * np.dot(delta_h.reshape(f_h.shape[0],1),attributes[j,:].reshape(1,input_length+1)))
+            momentum_o = tmp_o
+            momentum_h = tmp_h 
 
     return hidden_weights,output_weights
 
