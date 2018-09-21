@@ -1,0 +1,8 @@
+dataset/seeds_dataset_pre.txt
+7
+3
+3
+500
+0.2
+0.7
+0.7
