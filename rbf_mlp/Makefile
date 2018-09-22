@@ -1,2 +1,2 @@
 all:
-	python src/mlp.py < input.txt
+	python src/rbf.py < input.txt
