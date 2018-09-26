@@ -86,7 +86,7 @@ def test(data,input_length,centroids,output_weights,iteration,eta,momentum,train
     test_data = data[test_data,:]
     
     #MLP - Backward
-    backward(train_data,input_length,centroids,output_weights,iteration,eta,momentum)
+    output_weights = backward(train_data,input_length,centroids,output_weights,iteration,eta,momentum)
     
     #Extract class
     classes = np.copy(test_data[:,input_length:test_data.shape[1]])
