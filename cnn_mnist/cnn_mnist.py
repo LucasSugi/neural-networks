@@ -32,7 +32,7 @@ def cnn_model_fn(features, labels, mode):
   conv1 = tf.layers.conv2d(
       inputs=input_layer,
       filters=filter_layer_1,
-      kernel_size=[3, 3],
+      kernel_size=[7, 7],
       padding="same",
       activation=tf.nn.relu)
 
@@ -43,7 +43,7 @@ def cnn_model_fn(features, labels, mode):
   conv2 = tf.layers.conv2d(
       inputs=pool1,
       filters=filter_layer_2,
-      kernel_size=[3, 3],
+      kernel_size=[7, 7],
       padding="same",
       activation=tf.nn.relu)
 
@@ -100,7 +100,7 @@ def main(unused_argv):
   #Get images for train from MNIST
   train_data,train_labels = mnist.train.images,np.asarray(mnist.train.labels, dtype=np.int32)
 
-  #Get images for test from internet
+  #Get images for test
   eval_data = np.append(img.imread("one.png").reshape([1,784]),img.imread("two.png").reshape([1,784]),axis=0)
   eval_data = np.append(eval_data,img.imread("three.png").reshape([1,784]),axis=0)
   eval_data = np.append(eval_data,img.imread("four.png").reshape([1,784]),axis=0)
