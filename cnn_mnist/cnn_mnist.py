@@ -14,11 +14,11 @@ import tensorflow as tf
 import random as rd
 import imageio as img
 
-filter_layer_1 = 28
+filter_layer_1 = 16
 filter_layer_2 = 32
-units_dense_1 = 512
-units_dense_2 = 256
-epochs = 5
+units_dense_1 = 128
+units_dense_2 = 64
+epochs = 10
 
 #Show log's on windows
 tf.logging.set_verbosity(tf.logging.INFO)
