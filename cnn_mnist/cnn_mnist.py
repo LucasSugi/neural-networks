@@ -14,11 +14,11 @@ import tensorflow as tf
 import random as rd
 import imageio as img
 
-filter_layer_1 = 16
+filter_layer_1 = 28
 filter_layer_2 = 32
 units_dense_1 = 512
 units_dense_2 = 256
-epochs = 10
+epochs = 5
 
 #Show log's on windows
 tf.logging.set_verbosity(tf.logging.INFO)
@@ -101,14 +101,15 @@ def main(unused_argv):
   train_data,train_labels = mnist.train.images,np.asarray(mnist.train.labels, dtype=np.int32)
 
   #Get images for test from internet
-  eval_data = np.append(img.imread("one.jpg").reshape([1,784]),img.imread("two.jpg").reshape([1,784]),axis=0)
-  eval_data = np.append(eval_data,img.imread("three.jpg").reshape([1,784]),axis=0)
-  eval_data = np.append(eval_data,img.imread("six.jpg").reshape([1,784]),axis=0)
+  eval_data = np.append(img.imread("one.png").reshape([1,784]),img.imread("two.png").reshape([1,784]),axis=0)
+  eval_data = np.append(eval_data,img.imread("three.png").reshape([1,784]),axis=0)
+  eval_data = np.append(eval_data,img.imread("four.png").reshape([1,784]),axis=0)
   eval_data = np.float32(eval_data)
-  eval_labels = np.asarray([1,2,3,6], dtype=np.int32)
-  
-  #eval_data = mnist.test.images # Returns np.array
-  #eval_labels = np.asarray(mnist.test.labels, dtype=np.int32)
+  eval_labels = np.asarray([1,2,3,4], dtype=np.int32)
+
+  #Normalize eval image
+  for i in range(eval_data.shape[0]):
+      eval_data[i] = (eval_data[i] - np.min(eval_data[i])) / (np.max(eval_data[i]) - np.min(eval_data[i]))
 
   # Create the Estimator
   mnist_classifier = tf.estimator.Estimator(model_fn=cnn_model_fn)
@@ -116,8 +117,7 @@ def main(unused_argv):
   # Set up logging for predictions
   # Log the values in the "Softmax" tensor with label "probabilities"
   tensors_to_log = {"probabilities": "softmax_tensor"}
-  logging_hook = tf.train.LoggingTensorHook(
-      tensors=tensors_to_log, every_n_iter=50)
+  logging_hook = tf.train.LoggingTensorHook(tensors=tensors_to_log, every_n_iter=50)
 
   # Train the model
   train_input_fn = tf.estimator.inputs.numpy_input_fn(
