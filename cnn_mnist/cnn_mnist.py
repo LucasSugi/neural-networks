@@ -26,7 +26,7 @@ tf.logging.set_verbosity(tf.logging.INFO)
 #Model for cnn
 def cnn_model_fn(features, labels, mode):
   # Input Layer
-  input_layer = tf.reshape(features["x"], [-1, 28, 28, 1])
+  input_layer = tf.reshape(features, [-1, 28, 28, 1])
 
   # Convolutional Layer 1
   conv1 = tf.layers.conv2d(
@@ -112,7 +112,7 @@ def main(unused_argv):
       eval_data[i] = (eval_data[i] - np.min(eval_data[i])) / (np.max(eval_data[i]) - np.min(eval_data[i]))
 
   # Create the Estimator
-  mnist_classifier = tf.estimator.Estimator(model_fn=cnn_model_fn)
+  mnist_classifier = tf.estimator.Estimator(model_fn=cnn_model_fn,model_dir='mnist_model',warm_start_from='mnist_model')
 
   # Set up logging for predictions
   # Log the values in the "Softmax" tensor with label "probabilities"
@@ -121,7 +121,7 @@ def main(unused_argv):
 
   # Train the model
   train_input_fn = tf.estimator.inputs.numpy_input_fn(
-      x={"x": train_data},
+      x=train_data,
       y=train_labels,
       num_epochs=epochs,
       shuffle=True)
@@ -131,7 +131,7 @@ def main(unused_argv):
 
   # Evaluate the model and print results
   eval_input_fn = tf.estimator.inputs.numpy_input_fn(
-      x={"x": eval_data},
+      x=eval_data,
       y=eval_labels,
       num_epochs=1,
       shuffle=False)
