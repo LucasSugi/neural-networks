@@ -111,7 +111,7 @@ def main(unused_argv):
   keys = {0:'Airplane',1:'Automobile',2:'Bird',3:'Cat',4:'Deer',5:'Dog',6:'Frog',7:'Horse',8:'Ship',9:'Truck'}
 
   # Predict
-  predict_model = tf.estimator.inputs.numpy_input_fn(x=data,y=labels,num_epochs=1,shuffle=False)
+  predict_model = tf.estimator.inputs.numpy_input_fn(x=data,num_epochs=1,shuffle=False)
   predict_result = list(cifar10_classifier.predict(input_fn=predict_model))
   counter = 0
   print()
