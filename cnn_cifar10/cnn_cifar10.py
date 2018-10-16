@@ -73,7 +73,7 @@ def cnn_model_fn(features, labels, mode):
 
   # Configure the Training Op (for TRAIN mode)
   if mode == tf.estimator.ModeKeys.TRAIN:
-    optimizer = tf.train.GradientDescentOptimizer(learning_rate=0.1)
+    optimizer = tf.train.GradientDescentOptimizer(learning_rate=0.05)
     train_op = optimizer.minimize(loss=loss,global_step=tf.train.get_global_step())
     return tf.estimator.EstimatorSpec(mode=mode, loss=loss, train_op=train_op)
 
@@ -118,9 +118,9 @@ def main(unused_argv):
   cifar10_classifier.train(input_fn=train_input_fn,hooks=[logging_hook])
 
   # Evaluate the model and print results
-  #eval_input_fn = tf.estimator.inputs.numpy_input_fn(x=x_test,y=y_test,num_epochs=1,shuffle=False)
-  #eval_results = cifar10_classifier.evaluate(input_fn=eval_input_fn)
-  #print(eval_results)
+  eval_input_fn = tf.estimator.inputs.numpy_input_fn(x=x_test,y=y_test,num_epochs=1,shuffle=False)
+  eval_results = cifar10_classifier.evaluate(input_fn=eval_input_fn)
+  print(eval_results)
 
 if __name__ == "__main__":
   tf.app.run()
