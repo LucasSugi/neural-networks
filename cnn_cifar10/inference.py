@@ -20,9 +20,6 @@ filter_layer_3 = 256
 units_dense_1 = 512
 units_dense_2 = 1024
 
-#Show log's on windows
-tf.logging.set_verbosity(tf.logging.INFO)
-
 #Model for cnn
 def cnn_model_fn(features, labels, mode):
   # Convolutional Layer 1
@@ -108,11 +105,19 @@ def main(unused_argv):
   data = normalize(data)
 
   # Create the Estimator
-  cifar10_classifier = tf.estimator.Estimator(model_fn=cnn_model_fn,warm_start_from='model_cifar10')
+  cifar10_classifier = tf.estimator.Estimator(model_fn=cnn_model_fn,model_dir='model_cifar10',warm_start_from='model_cifar10')
 
   # Predict
   predict_model = tf.estimator.inputs.numpy_input_fn(x=data,y=labels,num_epochs=1,shuffle=False)
-  predict_result = cifar10_classifier.predict(input_fn=predict_model)
+  predict_result = list(cifar10_classifier.predict(input_fn=predict_model))
+  counter = 0
+  for i in range(len(predict_result)):
+      print('Class: ',labels[i])
+      print('Predict class: ',predict_result[i]['classes'])
+      print('Probability of the class: ',np.max(predict_result[i]['probabilities']),'\n')
+      if(predict_result[i]['classes'] == labels[i]):
+          counter+=1
+  print('Accuracy: ',counter/len(predict_result))
 
 if __name__ == "__main__":
   tf.app.run()
