@@ -1,2 +1,3 @@
-model_checkpoint_path: "model.ckpt-7818"
+model_checkpoint_path: "model.ckpt-8209"
 all_model_checkpoint_paths: "model.ckpt-7818"
+all_model_checkpoint_paths: "model.ckpt-8209"
