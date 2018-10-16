@@ -107,13 +107,17 @@ def main(unused_argv):
   # Create the Estimator
   cifar10_classifier = tf.estimator.Estimator(model_fn=cnn_model_fn,model_dir='model_cifar10',warm_start_from='model_cifar10')
 
+  #Dictionary of classes
+  keys = {0:'Airplane',1:'Automobile',2:'Bird',3:'Cat',4:'Deer',5:'Dog',6:'Frog',7:'Horse',8:'Ship',9:'Truck'}
+
   # Predict
   predict_model = tf.estimator.inputs.numpy_input_fn(x=data,y=labels,num_epochs=1,shuffle=False)
   predict_result = list(cifar10_classifier.predict(input_fn=predict_model))
   counter = 0
+  print()
   for i in range(len(predict_result)):
-      print('Class: ',labels[i])
-      print('Predict class: ',predict_result[i]['classes'])
+      print('True class: ',keys[labels[i]])
+      print('Predict class: ',keys[predict_result[i]['classes']])
       print('Probability of the class: ',np.max(predict_result[i]['probabilities']),'\n')
       if(predict_result[i]['classes'] == labels[i]):
           counter+=1
