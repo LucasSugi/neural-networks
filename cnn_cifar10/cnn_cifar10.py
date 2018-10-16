@@ -73,7 +73,7 @@ def cnn_model_fn(features, labels, mode):
 
   # Configure the Training Op (for TRAIN mode)
   if mode == tf.estimator.ModeKeys.TRAIN:
-    optimizer = tf.train.GradientDescentOptimizer(learning_rate=0.05)
+    optimizer = tf.train.GradientDescentOptimizer(learning_rate=0.001)
     train_op = optimizer.minimize(loss=loss,global_step=tf.train.get_global_step())
     return tf.estimator.EstimatorSpec(mode=mode, loss=loss, train_op=train_op)
 
@@ -105,8 +105,6 @@ def main(unused_argv):
 
   # Create the Estimator
   cifar10_classifier = tf.estimator.Estimator(model_fn=cnn_model_fn,model_dir='model_cifar10',warm_start_from='model_cifar10')
-  #cifar10_classifier = tf.estimator.Estimator(model_fn=cnn_model_fn,model_dir='model_cifar10')
-  #cifar10_classifier = tf.estimator.Estimator(model_fn=cnn_model_fn)
 
   # Set up logging for predictions
   # Log the values in the "Softmax" tensor with label "probabilities"
