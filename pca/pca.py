@@ -5,7 +5,6 @@ Title: PCA
 '''
 
 import numpy as np
-from sklearn.preprocessing import StandardScaler
 
 class PCA:
     def __init__(self,k=None):
@@ -13,14 +12,14 @@ class PCA:
         self.explained_variance_ratio_ = []
     
     def fit_transform(self,X):
-        #Standardize data
-        features = StandardScaler().fit_transform(X)
-    
-        #Covariance matrix
-        cov_features = np.cov(features.T)
+        #Convert to numpy array
+        features = np.array(X)
+
+        #Correlation matrix
+        cor_features = np.corrcoef(features.T)
     
         #Eigenvalues and eigenvectors
-        eig_vals, eig_vecs = np.linalg.eig(cov_features)
+        eig_vals, eig_vecs = np.linalg.eig(cor_features)
         
         #Computes the percentage of each eig_vals
         tot = np.sum(eig_vals)
@@ -40,6 +39,6 @@ class PCA:
         w = np.array([]).reshape(4,0)
         for i in range(self.k):
             w = np.concatenate((w,eig_pairs[i][1].reshape(4,1)),axis=1)
-    
+        
         #Project data
         return features.dot(w)
