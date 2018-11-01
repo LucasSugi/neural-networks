@@ -18,10 +18,12 @@ iris = pd.read_csv('https://archive.ics.uci.edu/ml/machine-learning-databases/ir
 features = iris.drop('class',1)
 
 #Apply pca in data
-p = PCA().fit_transform(features)
+p = PCA(k=3)
+p = p.fit_transform(features)
 
 #Create a dataframe with new data
-principalDf = pd.DataFrame(data=p,columns=['pc1','pc2','pc3','pc4'])
+names = ['pc1','pc2','pc3','pc4']
+principalDf = pd.DataFrame(data=p,columns=names[0:p.shape[1]])
 
 #Concat with class
 finalDf = pd.concat([principalDf,iris['class']],axis=1)

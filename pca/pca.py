@@ -36,9 +36,9 @@ class PCA:
             self.k = len(eig_pairs)
         
         #Create matrix w
-        w = np.array([]).reshape(4,0)
+        w = np.array([]).reshape(len(eig_pairs),0)
         for i in range(self.k):
-            w = np.concatenate((w,eig_pairs[i][1].reshape(4,1)),axis=1)
+            w = np.concatenate((w,eig_pairs[i][1].reshape(len(eig_pairs),1)),axis=1)
         
         #Project data
         return features.dot(w)
