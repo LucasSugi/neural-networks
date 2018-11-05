@@ -3,7 +3,6 @@ Author: Lucas Yudi Sugi - 9293251
 '''
 
 import numpy as np
-from sklearn.preprocessing import MinMaxScaler
 
 class AdaptivePCA:
     def __init__(self,input_neuron,output_neuron,iteration,eta_w=0.001,eta_u=0.001):
@@ -22,9 +21,6 @@ class AdaptivePCA:
         for i in range(self.u.shape[0]):
             for j in range(i+1):
                 self.u[i,j] = np.random.rand()
-        #Normalize w and u
-        self.w = MinMaxScaler().fit_transform(self.w)
-        self.u = MinMaxScaler().fit_transform(self.u)
     
     #Fit and transform the model
     def fit_transform(self,X):
