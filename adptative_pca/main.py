@@ -17,7 +17,7 @@ from scipy import stats
 import warnings
 warnings.filterwarnings('ignore')
 
-#Read iris
+#Read wine
 wine = datasets.load_wine()
 wine = pd.DataFrame(data= np.c_[wine['data'], wine['target']],columns= wine['feature_names'] + ['target'])
 
