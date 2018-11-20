@@ -33,7 +33,7 @@ pca = PCA(k=5)
 newFeatures1 = pca.fit_transform(features)
 
 #Creating adaptive pca
-aPCA = AdaptivePCA(13,5,10000)
+aPCA = AdaptivePCA(13,5,1000)
 newFeatures2 = aPCA.fit_transform(features)
 
 #Split dataset into train and test
