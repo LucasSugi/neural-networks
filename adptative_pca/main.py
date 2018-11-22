@@ -33,7 +33,7 @@ pca = PCA(k=5)
 newFeatures1 = pca.fit_transform(features)
 
 #Creating adaptive pca
-aPCA = AdaptivePCA(13,5,1000)
+aPCA = AdaptivePCA(13,5,100)
 newFeatures2 = aPCA.fit_transform(features)
 
 #Split dataset into train and test
@@ -60,11 +60,11 @@ for train_index, test_index in kf.split(features):
     
     
 #Mean of each test
-print('Mean accuracy for None:',np.mean(score['None']))
-print('Mean accuracy for pca:',np.mean(score['pca']))
-print('Mean accuracy for aPca:',np.mean(score['aPca']),'\n')
+print('Mean accuracy for None:',np.round(np.mean(score['None']),3))
+print('Mean accuracy for pca:',np.round(np.mean(score['pca']),3))
+print('Mean accuracy for aPca:',np.round(np.mean(score['aPca']),3),'\n')
 
 #Test if mean is equal
-print('P-value between None and pca:',stats.ttest_ind(score['None'],score['pca']).pvalue)
-print('P-value between None and aPca:',stats.ttest_ind(score['None'],score['aPca']).pvalue)
-print('P-value between pca and aPca:',stats.ttest_ind(score['pca'],score['aPca']).pvalue)
+print('P-value between None and pca:',np.round(stats.ttest_ind(score['None'],score['pca']).pvalue,3))
+print('P-value between None and aPca:',np.round(stats.ttest_ind(score['None'],score['aPca']).pvalue,3))
+print('P-value between pca and aPca:',np.round(stats.ttest_ind(score['pca'],score['aPca']).pvalue,3))
