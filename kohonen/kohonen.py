@@ -5,7 +5,8 @@ Reference: http://www.computacaointeligente.com.br/algoritmos/mapas-auto-organiz
 
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.patches as mpatches
+from matplotlib.patches import RegularPolygon
+import matplotlib.lines as mlines
 
 class KOHONEN():
 
@@ -72,22 +73,49 @@ class KOHONEN():
 
     def show(self,target):
         target = np.array(target)
-        img = np.ones([self.grid[0],self.grid[1]])
+        color_map = np.ones([self.grid[0],self.grid[1]],dtype='str')
+        colors = {0:'red', 1:'blue', 2:'green'}
 
         #Crete image to plot
         for i in range(self.w.shape[0]):
             for j in range(self.w.shape[1]):
                 dist = np.sqrt(np.sum(np.power(self.w[i,j]-self.data,2),axis=1))
-                img[i,j] = target[dist.argmin()]
-        im = plt.imshow(img)
+                color_map[i,j] = colors.get(int(target[dist.argmin()]))
         
-        #Get colors from imshow
-        label = np.unique(target)
-        colors = im.cmap(im.norm(label))
+        # Mapeando as coordenadas dos hexágonos.
+        coord = []
+        for x in np.arange(10):
+            for i in range(10):
+                if(x%2 == 0):
+                    coord.append([x, i, -i])
+                else:
+                    if(i!=0):
+                        coord.append([x, i, -i+i/i])
         
-        #Create legend
-        patches = [ mpatches.Patch(color=colors[i], label="Class {l}".format(l=label[i])) for i in range(len(colors)) ]
-        plt.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0. )
-
-        #Plot image
+        # Horizontal cartesian coords
+        hcoord = [c[0] for c in coord]
+        
+        # Vertical cartersian coords
+        vcoord = [2. * np.sin(np.radians(60)) * (c[1] - c[2]) /3. for c in coord]
+        
+        colors = color_map.reshape(-1)
+        fig, ax = plt.subplots(1, figsize=(15,15))
+        ax.set_aspect('equal')
+        
+        # Add some coloured hexagons
+        for (i, j, color) in zip(hcoord, vcoord, colors):
+            hex = RegularPolygon((i, j), numVertices=6, radius=2. / 3., orientation=np.radians(30),facecolor = color,alpha=0.5, edgecolor='k')
+            ax.add_patch(hex)
+            plt.rcParams.update({'font.size': 22})
+            plt.axis('off')
+        
+        r = mlines.Line2D([], [], color='red', marker='H',
+                          markersize=20, label='Class 0')
+        b = mlines.Line2D([], [], color='blue', marker='H',
+                          markersize=20, label='Class 1')
+        g = mlines.Line2D([], [], color='green', marker='H',
+                          markersize=20, label='Class 2')
+        
+        plt.legend(handles=[r, b, g],bbox_to_anchor=(1.5,1.0))
+        ax.plot()
         plt.show()
